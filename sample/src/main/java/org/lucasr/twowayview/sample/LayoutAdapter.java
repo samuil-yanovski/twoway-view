@@ -50,7 +50,8 @@ public class LayoutAdapter extends EnhancedAdapter<LayoutAdapter.SimpleViewHolde
         }
     }
 
-    public LayoutAdapter(Context context, TwoWayView recyclerView, int layoutId) {
+    public LayoutAdapter(Context context, TwoWayView recyclerView, int layoutId, boolean allowDrag) {
+        super(recyclerView);
         mContext = context;
         mItems = new ArrayList<Integer>(COUNT);
         for (int i = 0; i < COUNT; i++) {
@@ -59,6 +60,7 @@ public class LayoutAdapter extends EnhancedAdapter<LayoutAdapter.SimpleViewHolde
 
         mRecyclerView = recyclerView;
         mLayoutId = layoutId;
+        setAllowDrag(allowDrag);
     }
 
     public void addItem(int position) {
@@ -87,7 +89,6 @@ public class LayoutAdapter extends EnhancedAdapter<LayoutAdapter.SimpleViewHolde
 
     @Override
     public void onBindViewHolder(SimpleViewHolder holder, int position) {
-        super.onBindViewHolder(holder, position);
         holder.title.setText(mItems.get(position)
             .toString());
 

@@ -30,8 +30,8 @@ import java.lang.reflect.Constructor;
 public class TwoWayView extends RecyclerView {
     private static final String LOGTAG = "TwoWayView";
 
-    private static final Class<?>[] sConstructorSignature = new Class[] {
-            Context.class, AttributeSet.class};
+    private static final Class<?>[] sConstructorSignature =
+        new Class[]{Context.class, AttributeSet.class};
 
     final Object[] sConstructorArgs = new Object[2];
 
@@ -47,7 +47,7 @@ public class TwoWayView extends RecyclerView {
         super(context, attrs, defStyle);
 
         final TypedArray a =
-                context.obtainStyledAttributes(attrs, R.styleable.twowayview_TwoWayView, defStyle, 0);
+            context.obtainStyledAttributes(attrs, R.styleable.twowayview_TwoWayView, defStyle, 0);
 
         final String name = a.getString(R.styleable.twowayview_TwoWayView_twowayview_layoutManager);
         if (!TextUtils.isEmpty(name)) {
@@ -67,11 +67,12 @@ public class TwoWayView extends RecyclerView {
                 name = packageName + "." + name;
             }
 
-            Class<? extends TwoWayLayoutManager> clazz =
-                    context.getClassLoader().loadClass(name).asSubclass(TwoWayLayoutManager.class);
+            Class<? extends TwoWayLayoutManager> clazz = context.getClassLoader()
+                .loadClass(name)
+                .asSubclass(TwoWayLayoutManager.class);
 
             Constructor<? extends TwoWayLayoutManager> constructor =
-                    clazz.getConstructor(sConstructorSignature);
+                clazz.getConstructor(sConstructorSignature);
 
             sConstructorArgs[0] = context;
             sConstructorArgs[1] = attrs;
@@ -79,7 +80,7 @@ public class TwoWayView extends RecyclerView {
             setLayoutManager(constructor.newInstance(sConstructorArgs));
         } catch (Exception e) {
             throw new IllegalStateException("Could not load TwoWayLayoutManager from " +
-                                             "class: " + name, e);
+                "class: " + name, e);
         }
     }
 
@@ -87,7 +88,7 @@ public class TwoWayView extends RecyclerView {
     public void setLayoutManager(LayoutManager layout) {
         if (!(layout instanceof TwoWayLayoutManager)) {
             throw new IllegalArgumentException("TwoWayView can only use TwoWayLayoutManager " +
-                                                "subclasses as its layout manager");
+                "subclasses as its layout manager");
         }
 
         super.setLayoutManager(layout);
@@ -112,4 +113,5 @@ public class TwoWayView extends RecyclerView {
         TwoWayLayoutManager layout = (TwoWayLayoutManager) getLayoutManager();
         return layout.getLastVisiblePosition();
     }
+
 }

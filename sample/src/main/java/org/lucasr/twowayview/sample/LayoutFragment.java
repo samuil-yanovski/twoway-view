@@ -28,18 +28,19 @@ import android.view.ViewGroup;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import static android.support.v7.widget.RecyclerView.SCROLL_STATE_IDLE;
-import static android.support.v7.widget.RecyclerView.SCROLL_STATE_DRAGGING;
-import static android.support.v7.widget.RecyclerView.SCROLL_STATE_SETTLING;
-
 import org.lucasr.twowayview.ItemClickSupport;
 import org.lucasr.twowayview.ItemClickSupport.OnItemClickListener;
 import org.lucasr.twowayview.ItemClickSupport.OnItemLongClickListener;
 import org.lucasr.twowayview.widget.DividerItemDecoration;
 import org.lucasr.twowayview.widget.TwoWayView;
 
+import static android.support.v7.widget.RecyclerView.SCROLL_STATE_DRAGGING;
+import static android.support.v7.widget.RecyclerView.SCROLL_STATE_IDLE;
+import static android.support.v7.widget.RecyclerView.SCROLL_STATE_SETTLING;
+
 public class LayoutFragment extends Fragment {
     private static final String ARG_LAYOUT_ID = "layout_id";
+    private static final String ARG_ALLOW_DRAG = "allow_drag";
 
     private TwoWayView mRecyclerView;
     private TextView mPositionText;
@@ -48,12 +49,14 @@ public class LayoutFragment extends Fragment {
     private Toast mToast;
 
     private int mLayoutId;
+    private boolean mAllowDrag;
 
-    public static LayoutFragment newInstance(int layoutId) {
+    public static LayoutFragment newInstance(int layoutId, boolean allowDrag) {
         LayoutFragment fragment = new LayoutFragment();
 
         Bundle args = new Bundle();
         args.putInt(ARG_LAYOUT_ID, layoutId);
+        args.putBoolean(ARG_ALLOW_DRAG, allowDrag);
         fragment.setArguments(args);
 
         return fragment;
@@ -63,11 +66,12 @@ public class LayoutFragment extends Fragment {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         mLayoutId = getArguments().getInt(ARG_LAYOUT_ID);
+        mAllowDrag = getArguments().getBoolean(ARG_ALLOW_DRAG);
     }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
-                             Bundle savedInstanceState) {
+        Bundle savedInstanceState) {
         return inflater.inflate(mLayoutId, container, false);
     }
 
@@ -84,10 +88,13 @@ public class LayoutFragment extends Fragment {
         mRecyclerView.setHasFixedSize(true);
         mRecyclerView.setLongClickable(true);
 
-        mPositionText = (TextView) view.getRootView().findViewById(R.id.position);
-        mCountText = (TextView) view.getRootView().findViewById(R.id.count);
+        mPositionText = (TextView) view.getRootView()
+            .findViewById(R.id.position);
+        mCountText = (TextView) view.getRootView()
+            .findViewById(R.id.count);
 
-        mStateText = (TextView) view.getRootView().findViewById(R.id.state);
+        mStateText = (TextView) view.getRootView()
+            .findViewById(R.id.state);
         updateState(SCROLL_STATE_IDLE);
 
         final ItemClickSupport itemClick = ItemClickSupport.addTo(mRecyclerView);
@@ -125,12 +132,12 @@ public class LayoutFragment extends Fragment {
         final Drawable divider = getResources().getDrawable(R.drawable.divider);
         mRecyclerView.addItemDecoration(new DividerItemDecoration(divider));
 
-        mRecyclerView.setAdapter(new LayoutAdapter(activity, mRecyclerView, mLayoutId));
+        mRecyclerView.setAdapter(new LayoutAdapter(activity, mRecyclerView, mLayoutId, mAllowDrag));
     }
 
     private void updateState(int scrollState) {
         String stateName = "Undefined";
-        switch(scrollState) {
+        switch (scrollState) {
             case SCROLL_STATE_IDLE:
                 stateName = "Idle";
                 break;

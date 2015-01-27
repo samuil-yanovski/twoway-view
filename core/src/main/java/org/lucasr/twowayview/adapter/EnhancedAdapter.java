@@ -1,9 +1,7 @@
 package org.lucasr.twowayview.adapter;
 
+import android.os.Handler;
 import android.support.v7.widget.RecyclerView;
-import android.util.Log;
-
-import org.lucasr.twowayview.R;
 
 /**
  * Created by samuil.yanovski on 26.1.2015 г..
@@ -15,16 +13,27 @@ public abstract class EnhancedAdapter<VH extends RecyclerView.ViewHolder> extend
     private OnDragStartListener mOnDragStartListener;
     private OnDragProgressListener mOnDragProgressListener;
 
+    private RecyclerView rv;
+
     protected abstract void moveItem(int fromPosition, int toPosition);
 
-    public EnhancedAdapter() {
+    public EnhancedAdapter(RecyclerView rv) {
         init();
+        this.rv = rv;
     }
 
     protected void init() {
-        setAllowDrag(true);
-        mOnDragProgressListener = new OnDragProgressListener(this);
-        mOnDragStartListener = new OnDragStartListener(this);
+        setAllowDrag(false);
+        setOnDragProgressListener(new OnDragProgressListener(this));
+        setOnDragStartListener(new OnDragStartListener(this));
+    }
+
+    protected void setOnDragStartListener(OnDragStartListener onDragStartListener) {
+        mOnDragStartListener = onDragStartListener;
+    }
+
+    protected void setOnDragProgressListener(OnDragProgressListener onDragProgressListener) {
+        mOnDragProgressListener = onDragProgressListener;
     }
 
     public boolean isAllowDrag() {
@@ -33,12 +42,6 @@ public abstract class EnhancedAdapter<VH extends RecyclerView.ViewHolder> extend
 
     public void setAllowDrag(boolean allowDrag) {
         this.allowDrag = allowDrag;
-    }
-
-    @Override
-    public void onBindViewHolder(VH holder, int position) {
-        Log.e("###", "onBindViewHolder from: " + position);
-        holder.itemView.setTag(R.id.twowayview_position, position);
     }
 
     @Override
@@ -58,7 +61,21 @@ public abstract class EnhancedAdapter<VH extends RecyclerView.ViewHolder> extend
     public void notifyItemDragged(int fromPosition, int toPosition) {
         moveItem(fromPosition, toPosition);
         notifyItemMoved(fromPosition, toPosition);
-        notifyItemChanged(fromPosition);
-        notifyItemChanged(toPosition);
+        new Handler().postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                rv.invalidateItemDecorations();
+            }
+        }, 500);
+
+
+        //        int minPosition = Math.min(fromPosition, toPosition);
+        //        int maxPosition = Math.max(fromPosition, toPosition);
+        //
+        //        for (int position = minPosition; position <= maxPosition; ++position) {
+        //            notifyItemChanged(position);
+        //        }
+        //
+        //        notifyItemMoved(fromPosition, toPosition);
     }
 }

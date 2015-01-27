@@ -43,14 +43,12 @@ public class MainActivity extends ActionBarActivity {
             mSelectedLayoutId = savedInstanceState.getInt(ARG_SELECTED_LAYOUT_ID);
         }
 
-        addLayoutTab(
-                actionBar, R.layout.layout_list, R.drawable.ic_list, "list");
-        addLayoutTab(
-                actionBar, R.layout.layout_grid, R.drawable.ic_grid, "grid");
-        addLayoutTab(
-                actionBar, R.layout.layout_staggered_grid, R.drawable.ic_staggered, "staggered");
-        addLayoutTab(
-                actionBar, R.layout.layout_spannable_grid, R.drawable.ic_spannable, "spannable");
+        addLayoutTab(actionBar, R.layout.layout_list, R.drawable.ic_list, "list");
+        addLayoutTab(actionBar, R.layout.layout_grid, R.drawable.ic_grid, "grid");
+        addLayoutTab(actionBar, R.layout.layout_staggered_grid, R.drawable.ic_staggered,
+            "staggered");
+        addLayoutTab(actionBar, R.layout.layout_spannable_grid, R.drawable.ic_spannable,
+            "spannable");
     }
 
     @Override
@@ -61,9 +59,9 @@ public class MainActivity extends ActionBarActivity {
 
     private void addLayoutTab(ActionBar actionBar, int layoutId, int iconId, String tag) {
         ActionBar.Tab tab = actionBar.newTab()
-                .setText("")
-                .setIcon(iconId)
-                .setTabListener(new TabListener(layoutId, tag));
+            .setText("")
+            .setIcon(iconId)
+            .setTabListener(new TabListener(layoutId, tag));
         actionBar.addTab(tab, layoutId == mSelectedLayoutId);
     }
 
@@ -81,7 +79,8 @@ public class MainActivity extends ActionBarActivity {
         public void onTabSelected(ActionBar.Tab tab, FragmentTransaction ft) {
             mFragment = (LayoutFragment) getSupportFragmentManager().findFragmentByTag(mTag);
             if (mFragment == null) {
-                mFragment = (LayoutFragment) LayoutFragment.newInstance(mLayoutId);
+                boolean allowDrag = (R.layout.layout_spannable_grid == mLayoutId ? false : true);
+                mFragment = (LayoutFragment) LayoutFragment.newInstance(mLayoutId, allowDrag);
                 ft.add(R.id.content, mFragment, mTag);
             } else {
                 ft.attach(mFragment);
