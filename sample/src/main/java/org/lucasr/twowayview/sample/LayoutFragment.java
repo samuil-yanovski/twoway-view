@@ -87,6 +87,7 @@ public class LayoutFragment extends Fragment {
         mRecyclerView = (TwoWayView) view.findViewById(R.id.list);
         mRecyclerView.setHasFixedSize(true);
         mRecyclerView.setLongClickable(true);
+        mRecyclerView.setAllowDrag(mAllowDrag);
 
         mPositionText = (TextView) view.getRootView()
             .findViewById(R.id.position);
@@ -132,7 +133,7 @@ public class LayoutFragment extends Fragment {
         final Drawable divider = getResources().getDrawable(R.drawable.divider);
         mRecyclerView.addItemDecoration(new DividerItemDecoration(divider));
 
-        mRecyclerView.setAdapter(new LayoutAdapter(activity, mRecyclerView, mLayoutId, mAllowDrag));
+        mRecyclerView.setAdapter(new LayoutAdapter(activity, mRecyclerView, mLayoutId));
     }
 
     private void updateState(int scrollState) {

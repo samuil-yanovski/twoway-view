@@ -24,7 +24,7 @@ import android.view.ViewGroup;
 import android.widget.TextView;
 
 import org.lucasr.twowayview.TwoWayLayoutManager;
-import org.lucasr.twowayview.adapter.EnhancedAdapter;
+import org.lucasr.twowayview.adapter.TwoWayAdapter;
 import org.lucasr.twowayview.widget.SpannableGridLayoutManager;
 import org.lucasr.twowayview.widget.StaggeredGridLayoutManager;
 import org.lucasr.twowayview.widget.TwoWayView;
@@ -32,7 +32,7 @@ import org.lucasr.twowayview.widget.TwoWayView;
 import java.util.ArrayList;
 import java.util.List;
 
-public class LayoutAdapter extends EnhancedAdapter<LayoutAdapter.SimpleViewHolder> {
+public class LayoutAdapter extends TwoWayAdapter<LayoutAdapter.SimpleViewHolder> {
     private static final int COUNT = 100;
 
     private final Context mContext;
@@ -50,8 +50,7 @@ public class LayoutAdapter extends EnhancedAdapter<LayoutAdapter.SimpleViewHolde
         }
     }
 
-    public LayoutAdapter(Context context, TwoWayView recyclerView, int layoutId, boolean allowDrag) {
-        super(recyclerView);
+    public LayoutAdapter(Context context, TwoWayView recyclerView, int layoutId) {
         mContext = context;
         mItems = new ArrayList<Integer>(COUNT);
         for (int i = 0; i < COUNT; i++) {
@@ -60,7 +59,6 @@ public class LayoutAdapter extends EnhancedAdapter<LayoutAdapter.SimpleViewHolde
 
         mRecyclerView = recyclerView;
         mLayoutId = layoutId;
-        setAllowDrag(allowDrag);
     }
 
     public void addItem(int position) {

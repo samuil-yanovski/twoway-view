@@ -18,13 +18,19 @@ package org.lucasr.twowayview.widget;
 
 import android.content.Context;
 import android.content.res.TypedArray;
+import android.os.Handler;
 import android.support.v7.widget.RecyclerView;
 import android.text.TextUtils;
 import android.util.AttributeSet;
+import android.view.View;
 
 import org.lucasr.twowayview.TwoWayLayoutManager;
 import org.lucasr.twowayview.TwoWayLayoutManager.Orientation;
+import org.lucasr.twowayview.adapter.TwoWayAdapter;
+import org.lucasr.twowayview.listeners.OnDragProgressListener;
+import org.lucasr.twowayview.listeners.OnDragRequestListener;
 
+import java.lang.ref.WeakReference;
 import java.lang.reflect.Constructor;
 
 public class TwoWayView extends RecyclerView {
@@ -34,13 +40,17 @@ public class TwoWayView extends RecyclerView {
         new Class[]{Context.class, AttributeSet.class};
 
     final Object[] sConstructorArgs = new Object[2];
+    private boolean allowDrag;
+    private OnDragProgressListener mOnDragProgressListener;
 
     public TwoWayView(Context context) {
         this(context, null);
+        init();
     }
 
     public TwoWayView(Context context, AttributeSet attrs) {
         this(context, attrs, 0);
+        init();
     }
 
     public TwoWayView(Context context, AttributeSet attrs, int defStyle) {
@@ -55,6 +65,11 @@ public class TwoWayView extends RecyclerView {
         }
 
         a.recycle();
+        init();
+    }
+
+    private void init() {
+        addOnItemTouchListener(new OnDragRequestListener(this));
     }
 
     private void loadLayoutManagerFromName(Context context, AttributeSet attrs, String name) {
@@ -84,6 +99,18 @@ public class TwoWayView extends RecyclerView {
         }
     }
 
+    public boolean isAllowDrag() {
+        return allowDrag;
+    }
+
+    public void setAllowDrag(boolean allowDrag) {
+        this.allowDrag = allowDrag;
+    }
+
+    public boolean hasDragSupport() {
+        return isAllowDrag() && null != mOnDragProgressListener;
+    }
+
     @Override
     public void setLayoutManager(LayoutManager layout) {
         if (!(layout instanceof TwoWayLayoutManager)) {
@@ -93,6 +120,30 @@ public class TwoWayView extends RecyclerView {
 
         super.setLayoutManager(layout);
     }
+
+    @Override
+    public void setAdapter(Adapter adapter) {
+        super.setAdapter(adapter);
+        if (adapter instanceof TwoWayAdapter) {
+            mOnDragProgressListener = new OnDragProgressListener((TwoWayAdapter) adapter);
+            adapter.registerAdapterDataObserver(new ItemDragObserver(this));
+        } else {
+            mOnDragProgressListener = null;
+        }
+    }
+
+    @Override
+    public void onChildAttachedToWindow(View child) {
+        super.onChildAttachedToWindow(child);
+        child.setOnDragListener(mOnDragProgressListener);
+    }
+
+    @Override
+    public void onChildDetachedFromWindow(View child) {
+        super.onChildDetachedFromWindow(child);
+        child.setOnDragListener(null);
+    }
+
 
     public Orientation getOrientation() {
         TwoWayLayoutManager layout = (TwoWayLayoutManager) getLayoutManager();
@@ -112,6 +163,35 @@ public class TwoWayView extends RecyclerView {
     public int getLastVisiblePosition() {
         TwoWayLayoutManager layout = (TwoWayLayoutManager) getLayoutManager();
         return layout.getLastVisiblePosition();
+    }
+
+    @Override
+    protected void onLayout(boolean changed, int l, int t, int r, int b) {
+        super.onLayout(changed, l, t, r, b);
+    }
+
+    private static class ItemDragObserver extends AdapterDataObserver {
+        private static final int DECORATIONS_UPDATE_PASS_DELAY = 500;
+
+        private WeakReference<TwoWayView> mHostViewReference;
+        private Handler mHandler = new Handler();
+        private Runnable mDecorationsProcessor = new Runnable() {
+            @Override
+            public void run() {
+                final TwoWayView hostView = mHostViewReference.get();
+                if (null != hostView) {
+                    hostView.invalidateItemDecorations();
+                }
+            }
+        };
+
+        public ItemDragObserver(TwoWayView hostView) {
+            mHostViewReference = new WeakReference<TwoWayView>(hostView);
+        }
+
+        public void onItemRangeMoved(int fromPosition, int toPosition, int itemCount) {
+            mHandler.postDelayed(mDecorationsProcessor, DECORATIONS_UPDATE_PASS_DELAY);
+        }
     }
 
 }

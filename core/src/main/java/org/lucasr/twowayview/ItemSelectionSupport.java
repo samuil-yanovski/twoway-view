@@ -57,12 +57,11 @@ public class ItemSelectionSupport {
     /**
      * Returns the number of items currently selected. This will only be valid
      * if the choice mode is not {@link ChoiceMode#NONE} (default).
-     *
+     * <p/>
      * <p>To determine the specific items that are currently selected, use one of
      * the <code>getChecked*</code> methods.
      *
      * @return The number of items currently selected
-     *
      * @see #getCheckedItemPosition()
      * @see #getCheckedItemPositions()
      * @see #getCheckedItemIds()
@@ -78,8 +77,7 @@ public class ItemSelectionSupport {
      *
      * @param position The item whose checked state to return
      * @return The item's checked state or <code>false</code> if choice mode
-     *         is invalid
-     *
+     * is invalid
      * @see #setChoiceMode(ChoiceMode)
      */
     public boolean isItemChecked(int position) {
@@ -95,12 +93,12 @@ public class ItemSelectionSupport {
      * mode has been set to {@link ChoiceMode#SINGLE}.
      *
      * @return The position of the currently checked item or
-     *         {@link #INVALID_POSITION} if nothing is selected
-     *
+     * {@link #INVALID_POSITION} if nothing is selected
      * @see #setChoiceMode(ChoiceMode)
      */
     public int getCheckedItemPosition() {
-        if (mChoiceMode == ChoiceMode.SINGLE && mCheckedStates != null && mCheckedStates.size() == 1) {
+        if (mChoiceMode == ChoiceMode.SINGLE && mCheckedStates != null &&
+            mCheckedStates.size() == 1) {
             return mCheckedStates.keyAt(0);
         }
 
@@ -111,10 +109,10 @@ public class ItemSelectionSupport {
      * Returns the set of checked items in the list. The result is only valid if
      * the choice mode has not been set to {@link ChoiceMode#NONE}.
      *
-     * @return  A SparseBooleanArray which will return true for each call to
-     *          get(int position) where position is a position in the list,
-     *          or <code>null</code> if the choice mode is set to
-     *          {@link ChoiceMode#NONE}.
+     * @return A SparseBooleanArray which will return true for each call to
+     * get(int position) where position is a position in the list,
+     * or <code>null</code> if the choice mode is set to
+     * {@link ChoiceMode#NONE}.
      */
     public SparseBooleanArray getCheckedItemPositions() {
         if (mChoiceMode != ChoiceMode.NONE) {
@@ -130,13 +128,12 @@ public class ItemSelectionSupport {
      * has stable IDs.
      *
      * @return A new array which contains the id of each checked item in the
-     *         list.
-     *
+     * list.
      * @see android.support.v7.widget.RecyclerView.Adapter#hasStableIds()
      */
     public long[] getCheckedItemIds() {
-        if (mChoiceMode == ChoiceMode.NONE
-                || mCheckedIdStates == null || mRecyclerView.getAdapter() == null) {
+        if (mChoiceMode == ChoiceMode.NONE || mCheckedIdStates == null ||
+            mRecyclerView.getAdapter() == null) {
             return new long[0];
         }
 
@@ -156,7 +153,7 @@ public class ItemSelectionSupport {
      * {@link ChoiceMode#MULTIPLE}.
      *
      * @param position The item whose checked state is to be checked
-     * @param checked The new checked state for the item
+     * @param checked  The new checked state for the item
      */
     public void setItemChecked(int position, boolean checked) {
         if (mChoiceMode == ChoiceMode.NONE) {
@@ -256,7 +253,7 @@ public class ItemSelectionSupport {
      * {@link ChoiceMode#MULTIPLE}, the list allows any number of items to be chosen.
      *
      * @param choiceMode One of {@link ChoiceMode#NONE}, {@link ChoiceMode#SINGLE}, or
-     * {@link ChoiceMode#MULTIPLE}
+     *                   {@link ChoiceMode#MULTIPLE}
      */
     public void setChoiceMode(ChoiceMode choiceMode) {
         if (mChoiceMode == choiceMode) {
@@ -296,7 +293,8 @@ public class ItemSelectionSupport {
             if (currentId != newPositionId) {
                 // Look around to see if the ID is nearby. If not, uncheck it.
                 final int start = Math.max(0, currentPosition - CHECK_POSITION_SEARCH_DISTANCE);
-                final int end = Math.min(currentPosition + CHECK_POSITION_SEARCH_DISTANCE, itemCount);
+                final int end =
+                    Math.min(currentPosition + CHECK_POSITION_SEARCH_DISTANCE, itemCount);
 
                 boolean found = false;
                 for (int searchPos = start; searchPos < end; searchPos++) {
@@ -408,18 +406,18 @@ public class ItemSelectionSupport {
             }
         }
 
-        public static final Parcelable.Creator<CheckedStates> CREATOR
-                = new Parcelable.Creator<CheckedStates>() {
-            @Override
-            public CheckedStates createFromParcel(Parcel in) {
-                return new CheckedStates(in);
-            }
+        public static final Parcelable.Creator<CheckedStates> CREATOR =
+            new Parcelable.Creator<CheckedStates>() {
+                @Override
+                public CheckedStates createFromParcel(Parcel in) {
+                    return new CheckedStates(in);
+                }
 
-            @Override
-            public CheckedStates[] newArray(int size) {
-                return new CheckedStates[size];
-            }
-        };
+                @Override
+                public CheckedStates[] newArray(int size) {
+                    return new CheckedStates[size];
+                }
+            };
     }
 
     private static class CheckedIdStates extends LongSparseArray<Integer> implements Parcelable {
@@ -454,8 +452,7 @@ public class ItemSelectionSupport {
             }
         }
 
-        public static final Creator<CheckedIdStates> CREATOR
-                = new Creator<CheckedIdStates>() {
+        public static final Creator<CheckedIdStates> CREATOR = new Creator<CheckedIdStates>() {
             @Override
             public CheckedIdStates createFromParcel(Parcel in) {
                 return new CheckedIdStates(in);
@@ -469,12 +466,12 @@ public class ItemSelectionSupport {
     }
 
     private class TouchListener extends ClickItemTouchListener {
-        TouchListener(RecyclerView recyclerView) {
+        protected TouchListener(RecyclerView recyclerView) {
             super(recyclerView);
         }
 
         @Override
-        boolean performItemClick(RecyclerView parent, View view, int position, long id) {
+        protected boolean performItemClick(RecyclerView parent, View view, int position, long id) {
             final Adapter adapter = mRecyclerView.getAdapter();
             boolean checkedStateChanged = false;
 
@@ -524,7 +521,8 @@ public class ItemSelectionSupport {
         }
 
         @Override
-        boolean performItemLongClick(RecyclerView parent, View view, int position, long id) {
+        protected boolean performItemLongClick(RecyclerView parent, View view, int position,
+            long id) {
             return true;
         }
     }

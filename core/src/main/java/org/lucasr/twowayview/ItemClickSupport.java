@@ -15,10 +15,10 @@ public class ItemClickSupport {
          * Callback method to be invoked when an item in the RecyclerView
          * has been clicked.
          *
-         * @param parent The RecyclerView where the click happened.
-         * @param view The view within the RecyclerView that was clicked
+         * @param parent   The RecyclerView where the click happened.
+         * @param view     The view within the RecyclerView that was clicked
          * @param position The position of the view in the adapter.
-         * @param id The row id of the item that was clicked.
+         * @param id       The row id of the item that was clicked.
          */
         void onItemClick(RecyclerView parent, View view, int position, long id);
     }
@@ -32,11 +32,10 @@ public class ItemClickSupport {
          * Callback method to be invoked when an item in the RecyclerView
          * has been clicked and held.
          *
-         * @param parent The RecyclerView where the click happened
-         * @param view The view within the RecyclerView that was clicked
+         * @param parent   The RecyclerView where the click happened
+         * @param view     The view within the RecyclerView that was clicked
          * @param position The position of the view in the list
-         * @param id The row id of the item that was clicked
-         *
+         * @param id       The row id of the item that was clicked
          * @return true if the callback consumed the long click, false otherwise
          */
         boolean onItemLongClick(RecyclerView parent, View view, int position, long id);
@@ -111,12 +110,12 @@ public class ItemClickSupport {
     }
 
     private class TouchListener extends ClickItemTouchListener {
-        TouchListener(RecyclerView recyclerView) {
+        protected TouchListener(RecyclerView recyclerView) {
             super(recyclerView);
         }
 
         @Override
-        boolean performItemClick(RecyclerView parent, View view, int position, long id) {
+        protected boolean performItemClick(RecyclerView parent, View view, int position, long id) {
             if (mItemClickListener != null) {
                 view.playSoundEffect(SoundEffectConstants.CLICK);
                 mItemClickListener.onItemClick(parent, view, position, id);
@@ -127,7 +126,8 @@ public class ItemClickSupport {
         }
 
         @Override
-        boolean performItemLongClick(RecyclerView parent, View view, int position, long id) {
+        protected boolean performItemLongClick(RecyclerView parent, View view, int position,
+            long id) {
             if (mItemLongClickListener != null) {
                 view.performHapticFeedback(HapticFeedbackConstants.LONG_PRESS);
                 return mItemLongClickListener.onItemLongClick(parent, view, position, id);
